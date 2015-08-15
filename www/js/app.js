@@ -5,8 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-var game = new Game();
-angular.module('starter', ['ionic', 'controllers', 'services'])
+angular.module('dionic', ['ionic'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -21,130 +20,117 @@ angular.module('starter', ['ionic', 'controllers', 'services'])
       // org.apache.cordova.statusbar required
       StatusBar.styleLightContent();
     }
-
-    // Matter.js module aliases
-    // var Engine = Matter.Engine,
-    // World = Matter.World,
-    // Bodies = Matter.Bodies;
-    //
-    // // create a Matter.js engine
-    // var engine = Engine.create(document.body);
-    //
-    // // create two boxes and a ground
-    // var boxA = Bodies.rectangle(400, 200, 80, 80);
-    // var boxB = Bodies.rectangle(450, 50, 80, 80);
-    // var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
-    //
-    // // add all of the bodies to the world
-    // World.add(engine.world, [boxA, boxB, ground]);
-    //
-    // // run the engine
-    // Engine.run(engine);
-    //
-    // console.log("ran");
-
-
-    if (game.init())
-      game.start();
-
-
-
   });
 })
 
-.config(function($stateProvider, $urlRouterProvider) {
+.config(function() {
+})
 
-  // Ionic uses AngularUI Router which uses the concept of states
-  // Learn more here: https://github.com/angular-ui/ui-router
-  // Set up the various states which the app can be in.
-  // Each state's controller can be found in controllers.js
-  $stateProvider
+.controller('DionicController', function($scope, DionicFactory){
+  var Drawable = DionicFactory.Drawable;
+  var Background = DionicFactory.Background;
+  var Game = DionicFactory.Game;
+  var animate = DionicFactory.animate;
+  Background.prototype = new Drawable();
 
-  .state('Main', {
-    url: '/',
-    templateUrl: 'templates/main.html',
-    controller: 'AppCtrl'
-  })
+  var game = new Game();
+  // console.log(game);
+  if (game.init()){
+    game.start();
+  }
 
-  // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/');
 
+})
+
+.factory('DionicFactory', function(){
+  var GAME;
+  // this allows us to initalize pictures once and not multiple times
+  var imageRepo = new function() {
+    this.empty = null;
+    this.background = new Image();
+
+    this.background.src = "img/bg.png";
+  };
+
+  function Drawable() {
+    this.init = function(x,y) {
+      this.x = x;
+      this.y = y;
+    }
+
+    this.speed = 0;
+    this.gravity = 1;
+    this.canvasWidth = 0;
+    this.canvasHeight = 0;
+
+    this.draw = function() {
+    }
+  }
+
+  function Background() {
+    this.speed = 1;
+
+    this.draw = function() {
+      this.x -= this.speed;
+
+      this.context.drawImage(imageRepo.background, this.x, this.y);
+      this.context.drawImage(imageRepo.background, this.x+this.canvasWidth, this.y);
+
+      if (this.x <= -this.canvasWidth) {
+        this.x = 0;
+      }
+    };
+  }
+  Background.prototype = new Drawable();
+  function Game() {
+    this.init = function() {
+      this.bgCanvas = document.getElementById('background');
+      if (this.bgCanvas.getContext) {
+        this.bgContext = this.bgCanvas.getContext('2d');
+        console.log(this.bgContext);
+        Background.prototype.context = this.bgContext;
+        Background.prototype.canvasWidth = this.bgCanvas.width;
+        Background.prototype.canvasHeight = this.bgCanvas.height;
+
+        this.background = new Background();
+        // console.log(this.background);
+        this.background.init(0,0);
+        GAME = this;
+        return true;
+      } else {
+        return false;
+      }
+    };
+
+    this.start = function() {
+      // console.log(this);
+      animate();
+    };
+  }
+
+  function animate() {
+    requestAnimFrame( animate );
+    // console.log(game);
+    GAME.background.draw();
+  }
+
+
+
+  return {
+    Drawable:Drawable,
+    Game:Game,
+    Background:Background,
+    animate:animate
+  }
 });
-
-// this allows us to initalize pictures once and not multiple times
-var imageRepo = new function() {
-  this.empty = null;
-  this.background = new Image();
-
-  this.background.src = "img/bg.png";
-};
-
-function Drawable() {
-  this.init = function(x,y) {
-    this.x = x;
-    this.y = y;
-  }
-
-  this.speed = 0;
-  this.gravity = 1;
-  this.canvasWidth = 0;
-  this.canvasHeight = 0;
-
-  this.draw = function() {
-  }
-}
-
-function Background() {
-  this.speed = 1;
-
-  this.draw = function() {
-    this.x -= this.speed;
-
-    this.context.drawImage(imageRepo.background, this.x, this.y);
-    this.context.drawImage(imageRepo.background, this.x+this.canvasWidth, this.y);
-
-    if (this.x <= -this.canvasWidth) {
-      this.x = 0;
-    }
-  };
-}
-Background.prototype = new Drawable();
-
-function Game() {
-  this.init = function() {
-    this.bgCanvas = document.getElementById('background');
-    if (this.bgCanvas.getContext) {
-      this.bgContext = this.bgCanvas.getContext('2d');
-      console.log(this.bgContext);
-      Background.prototype.context = this.bgContext;
-			Background.prototype.canvasWidth = this.bgCanvas.width;
-			Background.prototype.canvasHeight = this.bgCanvas.height;
-
-      this.background = new Background();
-      this.background.init(0,0);
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  this.start = function() {
-    animate();
-  };
-}
-
-function animate() {
-  requestAnimFrame( animate );
-  game.background.draw();
-}
 
 window.requestAnimFrame = (function(){
   return window.requestAnimationFrame   ||
-			window.webkitRequestAnimationFrame ||
-			window.mozRequestAnimationFrame    ||
-			window.oRequestAnimationFrame      ||
-			window.msRequestAnimationFrame     ||
-			function(/* function */ callback, /* DOMElement */ element){
-				window.setTimeout(callback, 1000 / 60);
-			};
+      window.webkitRequestAnimationFrame ||
+      window.mozRequestAnimationFrame    ||
+      window.oRequestAnimationFrame      ||
+      window.msRequestAnimationFrame     ||
+      function(/* function */ callback, /* DOMElement */ element){
+        window.setTimeout(callback, 1000 / 60);
+      };
 })();
