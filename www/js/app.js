@@ -11,15 +11,38 @@ angular.module('starter', ['ionic', 'controllers', 'services'])
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
-    if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
-      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-      cordova.plugins.Keyboard.disableScroll(true);
+    // if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
+    //   cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+    //   cordova.plugins.Keyboard.disableScroll(true);
+    //
+    // }
+    // if (window.StatusBar) {
+    //   // org.apache.cordova.statusbar required
+    //   StatusBar.styleLightContent();
+    // }
 
-    }
-    if (window.StatusBar) {
-      // org.apache.cordova.statusbar required
-      StatusBar.styleLightContent();
-    }
+    // Matter.js module aliases
+    var Engine = Matter.Engine,
+    World = Matter.World,
+    Bodies = Matter.Bodies;
+
+    // create a Matter.js engine
+    var engine = Engine.create(document.body);
+
+    // create two boxes and a ground
+    var boxA = Bodies.rectangle(400, 200, 80, 80);
+    var boxB = Bodies.rectangle(450, 50, 80, 80);
+    var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+
+    // add all of the bodies to the world
+    World.add(engine.world, [boxA, boxB, ground]);
+
+    // run the engine
+    Engine.run(engine);
+
+    console.log("ran");
+
+
   });
 })
 
