@@ -80,7 +80,8 @@ angular.module('dionic', ['ionic'])
 
         for (var i = 0; i < 10; i++) {
           this.pool.get(x,y);
-          x += 64 + 25;
+          x += 64 + 150;
+          y = Math.floor(Math.random()* window.innerHeight);
         }
 
         return true;
