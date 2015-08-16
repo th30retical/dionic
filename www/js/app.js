@@ -39,17 +39,20 @@ angular.module('dionic', ['ionic'])
   $scope.score = 0;
   $scope.initiated = false;
 
+
   var game = new Game();
   game.init();
   $scope.init = function(){
     $scope.initiated = true;
     game.background.draw();
+    animateStatus = true;
     game.start();
   };
 
   $scope.restartGame = function(){
     $scope.restartGameButton = false;
     restartGameButton = false;
+    animateStatus = true;
     game.start();
   };
   // console.log(game);
@@ -123,15 +126,17 @@ angular.module('dionic', ['ionic'])
 
 
   function animate() {
-    requestAnimFrame( animate );
-    game.background.draw();
-    game.dino.draw();
-    game.pool.animate(game.dino);
-    $timeout(function(){
-      $scope.restartGameButton = restartGameButton;
-      $scope.score = score;
-      $scope.oldScore = oldScore;
-    },0);
+    if(animateStatus){
+      requestAnimFrame( animate );
+      game.background.draw();
+      game.dino.draw();
+      game.pool.animate(game.dino);
+      $timeout(function(){
+        $scope.restartGameButton = restartGameButton;
+        $scope.score = score;
+        $scope.oldScore = oldScore;
+      },0);
+    }
   }
 
 })
@@ -333,6 +338,7 @@ angular.module('dionic', ['ionic'])
         if(score > oldScore)
           oldScore = score;
         score = 0;
+        animateStatus = false;
         restartGameButton = true;
         return true;
       } else {
@@ -380,3 +386,4 @@ window.requestAnimFrame = (function(){
 var score = 0;
 var oldScore = 0;
 var restartGameButton = false;
+var animateStatus = false;
