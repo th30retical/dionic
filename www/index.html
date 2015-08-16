@@ -43,6 +43,9 @@
     </style>
   </head>
   <body ng-app="dionic" ng-controller="DionicController" on-tap="onTap()">
+    <button class="button button-clear button-energized button-large" style="font-size: 50px">
+      Score: {{score}}
+    </button>
     <canvas id="background" height="1080" width="1920">
       Your browser does not support canvas. Please try again with a differet browser.
     </canvas>

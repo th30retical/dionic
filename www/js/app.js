@@ -26,7 +26,7 @@ angular.module('dionic', ['ionic'])
 .config(function() {
 })
 
-.controller('DionicController', function($scope, DionicFactory, $interval){
+.controller('DionicController', function($scope, DionicFactory, $timeout){
   var Drawable = DionicFactory.Drawable;
   var Background = DionicFactory.Background;
   var Dino = DionicFactory.Dino;
@@ -35,7 +35,7 @@ angular.module('dionic', ['ionic'])
   var Pool = DionicFactory.Pool;
   // var Game = DionicFactory.Game;
   // var animate = DionicFactory.animate;
-
+  $scope.score = 0;
   var game = new Game();
   // console.log(game);
   if (game.init()){
@@ -101,26 +101,11 @@ angular.module('dionic', ['ionic'])
     };
   }
 
-  // $interval(function(){
-  //   // console.log(dino.canvasWidth);
-  //   // console.log(game.pool.getPool());
-  //   if(game.pool.getPool()!== undefined){
-  //     if(game.pool.getPool().x <= 100){
-  //       console.log('splice');
-  //       game.pool.shiftPool();
-  //     }
-  //   }
-  // }, 0);
 
   function animate() {
-    // if(game.pool.getPool().x < 64 && game.pool.getPool().x > 0)
-    //   console.log('blah');
-    // console.log("run");
-
-    // if (object1.x < object2.x + object2.width  && object1.x + object1.width  > object2.x &&
-		// object1.y < object2.y + object2.height && object1.y + object1.height > object2.y) {
-    //   // The objects are touching
-    // }
+    $timeout(function(){
+      $scope.score = score;
+    },0);
     requestAnimFrame( animate );
     game.background.draw();
     game.dino.draw();
@@ -253,6 +238,7 @@ angular.module('dionic', ['ionic'])
       if (this.x <= -64){
         return true;
       } else if( (this.y > dino.y) && (this.y < (dino.y + 150)) && ( (this.x < 150) && (this.x > 0) )){
+        score++;
         console.log('collision');
         return true;
       } else {
@@ -295,3 +281,5 @@ window.requestAnimFrame = (function(){
         window.setTimeout(callback, 1000 / 60);
       };
 })();
+
+var score = 0;
