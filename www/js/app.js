@@ -33,25 +33,40 @@ angular.module('dionic', ['ionic'])
   var Steak = DionicFactory.Steak;
   var imageRepo = DionicFactory.imageRepo;
   var Pool = DionicFactory.Pool;
+  var Blackhole = DionicFactory.Blackhole;
   // var Game = DionicFactory.Game;
   // var animate = DionicFactory.animate;
   $scope.score = 0;
-  var game = new Game();
-  // console.log(game);
-  if (game.init()){
-    game.start();
-  }
+  $scope.initiated = false;
 
+  var game = new Game();
+  game.init();
+  $scope.init = function(){
+    $scope.initiated = true;
+    game.background.draw();
+    game.start();
+  };
+
+  $scope.restartGame = function(){
+    $scope.restartGame = false;
+    game.start();
+  };
+  // console.log(game);
+  // if (game.init()){
+  //   game.start();
+  // }
 
   function Game() {
     this.init = function() {
       this.bgCanvas = document.getElementById('background');
       this.dinoCanvas = document.getElementById('dino');
       this.steakCanvas = document.getElementById('steak');
+      this.blackholeCanvas = document.getElementById('blackhole');
       if (this.bgCanvas.getContext) {
         this.bgContext = this.bgCanvas.getContext('2d');
         this.dinoContext = this.dinoCanvas.getContext('2d');
         this.steakContext = this.steakCanvas.getContext('2d');
+        this.blackholeContext = this.blackholeCanvas.getContext('2d');
 
         Background.prototype.context = this.bgContext;
         Background.prototype.canvasWidth = this.bgCanvas.width;
@@ -62,10 +77,14 @@ angular.module('dionic', ['ionic'])
         Steak.prototype.context = this.steakContext;
         Steak.prototype.canvasWidth = this.steakCanvas.width;
         Steak.prototype.canvasHeight = this.steakCanvas.height;
+        Blackhole.prototype.context = this.blackholeContext;
+        Blackhole.prototype.canvasWidth = this.blackholeCanvas.width;
+        Blackhole.prototype.canvasHeight = this.blackholeCanvas.height;
 
 
         this.background = new Background();
         this.background.init(0,0);
+        this.background.draw();
 
         this.dino = new Dino();
         var dinoX = 0;
@@ -103,13 +122,15 @@ angular.module('dionic', ['ionic'])
 
 
   function animate() {
-    $timeout(function(){
-      $scope.score = score;
-    },0);
+    // console.log(game.dino.y);
     requestAnimFrame( animate );
     game.background.draw();
     game.dino.draw();
     game.pool.animate(game.dino);
+    $timeout(function(){
+      $scope.restartGame = restartGame;
+      $scope.score = score;
+    },0);
   }
 
 })
@@ -122,10 +143,12 @@ angular.module('dionic', ['ionic'])
     this.background = new Image();
     this.dino = new Image();
     this.steak = new Image();
+    this.blackhole = new Image();
 
     this.background.src = "img/bg3.png";
     this.dino.src = "img/dino.png";
     this.steak.src = "img/steak.png";
+    this.blackhole.src = "img/blackhole.png";
   };
 
   function Drawable() {
@@ -147,7 +170,6 @@ angular.module('dionic', ['ionic'])
 
   function Background() {
     this.speed = 5;
-
     this.draw = function() {
       this.x -= this.speed;
 
@@ -163,13 +185,20 @@ angular.module('dionic', ['ionic'])
 
   function Pool(maxSize) {
     var size = maxSize;
+    var blackholeSize = 4;
     var pool = [];
+    var poolBlackhole = [];
 
     this.init = function() {
       for (var i = 0; i < size; i++) {
         var steak = new Steak();
         steak.init(0,0, 64,64);
         pool[i] = steak;
+      }
+      for(var j = 0; j < blackholeSize ; j++){
+        var blackhole = new Blackhole();
+        blackhole.init(0,0, 150,150);
+        poolBlackhole[j] = blackhole;
       }
     };
 
@@ -192,30 +221,50 @@ angular.module('dionic', ['ionic'])
           pool[i].restart();
         }
       }
+
+      for (var j = 0; j < blackholeSize; j++) {
+        if (poolBlackhole[j].alive) {
+          if (poolBlackhole[j].draw(dino)) {
+            poolBlackhole[j].clear();
+            poolBlackhole.push((poolBlackhole.splice(j,1))[0]);
+          }
+          // pool[i].collision(dino);
+        } else {
+          poolBlackhole[j].restart();
+        }
+      }
     };
   }
 
   function Dino() {
+    var gravity = 5;
     // var counter = 0;
-    var change = false;
+    // var change = false;
     this.draw = function() {
       this.context.clearRect(this.x,this.y,this.width,this.height);
       // this.y += this.gravity;
-      if ((this.y <= (window.innerHeight - this.height) && this.y >= 0)) {
-        this.y += this.gravity;
-      } else {
-        if (change){
-          this.y += this.gravity;
-          change = false;
-        }
+      // if ((this.y <= (window.innerHeight - this.height) && this.y >= 0)) {
+      // console.log(window.innerHeight);
+      if((this.y <= 0)|| (this.y >= (window.innerHeight-this.height))){
+        // console.log('here');
+      }else{
+        this.y += gravity;
       }
+
+      // } else {
+      //   if (change){
+      //     this.y += this.gravity;
+      //     change = false;
+      //   }
+      // }
 
       this.context.drawImage(imageRepo.dino, this.x, this.y);
     };
 
     this.invert = function() {
-      this.gravity = this.gravity*-1;
-      change = true;
+      gravity = gravity*-1;
+      this.y += gravity;
+      // change = true;
       // return this.gravity;
     };
   }
@@ -239,7 +288,6 @@ angular.module('dionic', ['ionic'])
         return true;
       } else if( (this.y > dino.y) && (this.y < (dino.y + 150)) && ( (this.x < 150) && (this.x > 0) )){
         score++;
-        console.log('collision');
         return true;
       } else {
         this.context.drawImage(imageRepo.steak, this.x, this.y);
@@ -261,13 +309,58 @@ angular.module('dionic', ['ionic'])
   }
   Steak.prototype = new Drawable();
 
+  //
+
+  function Blackhole() {
+    this.alive = false;
+    this.speed = 5;
+    var oldScore = 0;
+
+    this.spawn = function (x,y) {
+      this.x = x;
+      this.y = y;
+      this.alive = true;
+    };
+    // var counter = 0;
+    this.draw = function(dino) {
+      this.context.clearRect(this.x-1,this.y,this.width+1,this.height);
+      this.x -= this.speed;
+
+      if (this.x <= -64){
+        return true;
+      } else if( (this.y > dino.y) && (this.y < (dino.y + 150)) && ( (this.x < 150) && (this.x > 0) )){
+        if(score > oldScore)
+          oldScore = score;
+        restartGame = true;
+        return true;
+      } else {
+        this.context.drawImage(imageRepo.blackhole, this.x, this.y);
+        return false;
+      }
+    };
+
+    this.clear = function() {
+      this.x = window.innerWidth+65+200;
+      this.y = Math.floor(Math.random() * (window.innerHeight - this.width));
+      this.speed = 0;
+      this.alive = false;
+    };
+
+    this.restart = function() {
+      this.speed = 5;
+      this.alive = true;
+    };
+  }
+  Blackhole.prototype = new Drawable();
+
   return {
     Drawable:Drawable,
     Background:Background,
     Dino:Dino,
     Steak:Steak,
     imageRepo:imageRepo,
-    Pool:Pool
+    Pool:Pool,
+    Blackhole:Blackhole
   }
 });
 
@@ -283,3 +376,4 @@ window.requestAnimFrame = (function(){
 })();
 
 var score = 0;
+var restartGame = false;

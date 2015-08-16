@@ -37,8 +37,19 @@
       #steak {
         z-index:-1;
       }
+      #blackhole {
+        z-index:-1;
+      }
       #dino {
         z-index:0;
+      }
+      #startButton, #restartButton {
+        position: absolute;
+        font-size:100px;
+        width:50%;
+        height:30%;
+        top:35%;
+        left:25%;
       }
     </style>
   </head>
@@ -51,6 +62,13 @@
     </canvas>
     <canvas id="dino" width="1920" height="1080"></canvas>
     <canvas id="steak" width="1920" height="1080"></canvas>
+    <canvas id="blackhole" width="1920" height="1080"></canvas>
+    <button id="startButton" class="button button-energized" style="font-size: 100px;" ng-click="init();" ng-if="!initiated">
+      Start
+    </button>
+    <button id="restartButton" class="button button-energized" style="font-size: 100px;" ng-if="false" ng-click="restartGame();">
+      restart
+    </button>
     <!--
       The nav bar that will be updated as we navigate between views.
     -->
