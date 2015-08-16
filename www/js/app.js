@@ -72,16 +72,16 @@ angular.module('dionic', ['ionic'])
         var dinoY = window.innerHeight/2 - 75;
         this.dino.init(dinoX,dinoY,150,150);
 
-        this.pool = new Pool(10);
+        this.pool = new Pool(8);
         this.pool.init();
 
         var x = window.innerWidth;
         var y = window.innerHeight/2 - 32;
 
-        for (var i = 0; i < 10; i++) {
+        for (var i = 0; i < 8; i++) {
           this.pool.get(x,y);
           x += 64 + 150;
-          y = Math.floor(Math.random()* window.innerHeight);
+          y = Math.floor(Math.random()* (window.innerHeight-64));
         }
 
         return true;
@@ -95,16 +95,16 @@ angular.module('dionic', ['ionic'])
     };
   }
 
-  $interval(function(){
-    // console.log(dino.canvasWidth);
-    // console.log(game.pool.getPool());
-    if(game.pool.getPool()!== undefined){
-      if(game.pool.getPool().x <= 100){
-        console.log('splice');
-        game.pool.shiftPool();
-      }
-    }
-  }, 0);
+  // $interval(function(){
+  //   // console.log(dino.canvasWidth);
+  //   // console.log(game.pool.getPool());
+  //   if(game.pool.getPool()!== undefined){
+  //     if(game.pool.getPool().x <= 100){
+  //       console.log('splice');
+  //       game.pool.shiftPool();
+  //     }
+  //   }
+  // }, 0);
 
   function animate() {
     // if(game.pool.getPool().x < 64 && game.pool.getPool().x > 0)
@@ -189,13 +189,6 @@ angular.module('dionic', ['ionic'])
       }
     };
 
-    this.getPool = function(){
-      return pool[0];
-    }
-    this.shiftPool = function(){
-      pool.shift();
-    }
-
     this.animate = function() {
       for (var i = 0; i < size; i++) {
         if (pool[i].alive) {
@@ -204,7 +197,7 @@ angular.module('dionic', ['ionic'])
             pool.push((pool.splice(i,1))[0]);
           }
         } else {
-          break;
+          pool[i].reset();
         }
       }
     };
@@ -231,14 +224,25 @@ angular.module('dionic', ['ionic'])
     this.draw = function() {
       this.context.clearRect(this.x-1,this.y,this.width+1,this.height);
       this.x -= this.speed;
-      this.context.drawImage(imageRepo.steak, this.x, this.y);
+
+      if (this.x <= -64){
+        return true;
+      } else {
+        this.context.drawImage(imageRepo.steak, this.x, this.y);
+        return false;
+      }
     };
 
     this.clear = function() {
-      this.x = 0;
-      this.y = 0;
+      this.x = window.innerWidth+65+200;
+      this.y = Math.floor(Math.random() * (window.innerHeight - this.width));
       this.speed = 0;
       this.alive = false;
+    };
+
+    this.reset = function() {
+      this.speed = 5;
+      this.alive = true;
     };
   }
   Steak.prototype = new Drawable();
