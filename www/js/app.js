@@ -192,11 +192,11 @@ angular.module('dionic', ['ionic'])
     this.animate = function(dino) {
       for (var i = 0; i < size; i++) {
         if (pool[i].alive) {
-          if (pool[i].draw()) {
+          if (pool[i].draw(dino)) {
             pool[i].clear();
             pool.push((pool.splice(i,1))[0]);
           }
-          pool[i].collision(dino);
+          // pool[i].collision(dino);
         } else {
           pool[i].restart();
         }
@@ -235,11 +235,14 @@ angular.module('dionic', ['ionic'])
       this.alive = true;
     };
     // var counter = 0;
-    this.draw = function() {
+    this.draw = function(dino) {
       this.context.clearRect(this.x-1,this.y,this.width+1,this.height);
       this.x -= this.speed;
 
       if (this.x <= -64){
+        return true;
+      } else if( (this.y > dino.y) && (this.y < (dino.y + 150)) && ( (this.x < 150) && (this.x > 0) )){
+        console.log('collision');
         return true;
       } else {
         this.context.drawImage(imageRepo.steak, this.x, this.y);
