@@ -32,6 +32,7 @@ angular.module('dionic', ['ionic'])
   var Dino = DionicFactory.Dino;
   var Steak = DionicFactory.Steak;
   var imageRepo = DionicFactory.imageRepo;
+  var Pool = DionicFactory.Pool;
   // var Game = DionicFactory.Game;
   // var animate = DionicFactory.animate;
 
@@ -71,9 +72,16 @@ angular.module('dionic', ['ionic'])
         var dinoY = window.innerHeight/2 - 75;
         this.dino.init(dinoX,dinoY,150,150);
 
-        this.steak = new Steak();
-        console.log(steak);
-        this.steak.init(0,0,64,64);
+        this.pool = new Pool(10);
+        this.pool.init();
+
+        var x = window.innerWidth;
+        var y = window.innerHeight/2 - 32;
+
+        for (var i = 0; i < 10; i++) {
+          this.pool.get(x,y);
+          x += 64 + 25;
+        }
 
         return true;
       } else {
@@ -91,7 +99,7 @@ angular.module('dionic', ['ionic'])
     requestAnimFrame( animate );
     game.background.draw();
     game.dino.draw();
-    game.steak.draw();
+    game.pool.animate();
   }
 
 })
@@ -143,20 +151,71 @@ angular.module('dionic', ['ionic'])
   }
   Background.prototype = new Drawable();
 
+  function Pool(maxSize) {
+    var size = maxSize;
+    var pool = [];
+
+    this.init = function() {
+      for (var i = 0; i < size; i++) {
+        var steak = new Steak();
+        steak.init(0,0, 64,64);
+        pool[i] = steak;
+      }
+    };
+
+    this.get = function(x,y) {
+      if (!pool[size - 1].alive) {
+        pool[size -1].spawn(x,y);
+        pool.unshift(pool.pop());
+      }
+    };
+
+    this.animate = function() {
+      for (var i = 0; i < size; i++) {
+        if (pool[i].alive) {
+          if (pool[i].draw()) {
+            pool[i].clear();
+            pool.push((pool.splice(i,1))[0]);
+          }
+        } else {
+          break;
+        }
+      }
+    };
+  }
+
   function Dino() {
     // var counter = 0;
     this.draw = function() {
       this.context.drawImage(imageRepo.dino, this.x, this.y);
     };
   }
+  Dino.prototype = new Drawable();
 
   function Steak() {
+    this.alive = false;
+    this.speed = 5;
+
+    this.spawn = function (x,y) {
+      this.x = x;
+      this.y = y;
+      this.alive = true;
+    };
     // var counter = 0;
     this.draw = function() {
+      this.context.clearRect(this.x-1,this.y,this.width+1,this.height);
+      this.x -= this.speed;
       this.context.drawImage(imageRepo.steak, this.x, this.y);
+
+    };
+
+    this.clear = function() {
+      this.x = 0;
+      this.y = 0;
+      this.speed = 0;
+      this.alive = false;
     };
   }
-  Dino.prototype = new Drawable();
   Steak.prototype = new Drawable();
 
   return {
@@ -164,7 +223,8 @@ angular.module('dionic', ['ionic'])
     Background:Background,
     Dino:Dino,
     Steak:Steak,
-    imageRepo:imageRepo
+    imageRepo:imageRepo,
+    Pool:Pool
   }
 });
 
