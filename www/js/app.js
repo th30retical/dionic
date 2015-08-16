@@ -26,7 +26,7 @@ angular.module('dionic', ['ionic'])
 .config(function() {
 })
 
-.controller('DionicController', function($scope, DionicFactory){
+.controller('DionicController', function($scope, DionicFactory, $interval){
   var Drawable = DionicFactory.Drawable;
   var Background = DionicFactory.Background;
   var Dino = DionicFactory.Dino;
@@ -94,8 +94,26 @@ angular.module('dionic', ['ionic'])
     };
   }
 
+  $interval(function(){
+    // console.log(dino.canvasWidth);
+    // console.log(game.pool.getPool());
+    if(game.pool.getPool()!== undefined){
+      if(game.pool.getPool().x <= 100){
+        console.log('splice');
+        game.pool.shiftPool();
+      }
+    }
+  }, 0);
+
   function animate() {
+    // if(game.pool.getPool().x < 64 && game.pool.getPool().x > 0)
+    //   console.log('blah');
     // console.log("run");
+
+    // if (object1.x < object2.x + object2.width  && object1.x + object1.width  > object2.x &&
+		// object1.y < object2.y + object2.height && object1.y + object1.height > object2.y) {
+    //   // The objects are touching
+    // }
     requestAnimFrame( animate );
     game.background.draw();
     game.dino.draw();
@@ -170,6 +188,13 @@ angular.module('dionic', ['ionic'])
       }
     };
 
+    this.getPool = function(){
+      return pool[0];
+    }
+    this.shiftPool = function(){
+      pool.shift();
+    }
+
     this.animate = function() {
       for (var i = 0; i < size; i++) {
         if (pool[i].alive) {
@@ -206,7 +231,6 @@ angular.module('dionic', ['ionic'])
       this.context.clearRect(this.x-1,this.y,this.width+1,this.height);
       this.x -= this.speed;
       this.context.drawImage(imageRepo.steak, this.x, this.y);
-
     };
 
     this.clear = function() {
