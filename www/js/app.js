@@ -42,6 +42,7 @@ angular.module('dionic', ['ionic'])
     game.start();
   }
 
+
   function Game() {
     this.init = function() {
       this.bgCanvas = document.getElementById('background');
@@ -71,6 +72,7 @@ angular.module('dionic', ['ionic'])
         // console.log(this.dino.height);
         var dinoY = window.innerHeight/2 - 75;
         this.dino.init(dinoX,dinoY,150,150);
+        var b = this.dino;
 
         this.pool = new Pool(8);
         this.pool.init();
@@ -83,6 +85,10 @@ angular.module('dionic', ['ionic'])
           x += 64 + 150;
           y = Math.floor(Math.random()* (window.innerHeight-64));
         }
+
+        $scope.onTap = function() {
+          b.invert();
+        };
 
         return true;
       } else {
@@ -206,21 +212,26 @@ angular.module('dionic', ['ionic'])
 
   function Dino() {
     // var counter = 0;
+    var change = false;
     this.draw = function() {
       this.context.clearRect(this.x,this.y,this.width,this.height);
-      this.y += this.gravity;
-      if (this.y >= (window.innerHeight - this.height)) {
-        // console.log("fuck m8");
-        this.y -= this.gravity;
-        this.gravity = this.gravity*-1;
-      } else if (this.y <= 0) {
-        // console.log("flying high fom");
-        this.y -= this.gravity;
-        this.gravity = this.gravity*-1;
+      // this.y += this.gravity;
+      if ((this.y <= (window.innerHeight - this.height) && this.y >= 0)) {
+        this.y += this.gravity;
+      } else {
+        if (change){
+          this.y += this.gravity;
+          change = false;
+        }
       }
 
-
       this.context.drawImage(imageRepo.dino, this.x, this.y);
+    };
+
+    this.invert = function() {
+      this.gravity = this.gravity*-1;
+      change = true;
+      // return this.gravity;
     };
   }
   Dino.prototype = new Drawable();
@@ -255,13 +266,6 @@ angular.module('dionic', ['ionic'])
       this.y = Math.floor(Math.random() * (window.innerHeight - this.width));
       this.speed = 0;
       this.alive = false;
-    };
-
-    this.collision = function(dino) {
-      if (this.x <= 150) {
-        //start check if steak hits dino
-        console.log(dino.y);
-      }
     };
 
     this.restart = function() {
