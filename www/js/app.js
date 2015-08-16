@@ -34,8 +34,6 @@ angular.module('dionic', ['ionic'])
   var imageRepo = DionicFactory.imageRepo;
   var Pool = DionicFactory.Pool;
   var Blackhole = DionicFactory.Blackhole;
-  // var Game = DionicFactory.Game;
-  // var animate = DionicFactory.animate;
   $scope.score = 0;
   $scope.initiated = false;
 
@@ -44,7 +42,6 @@ angular.module('dionic', ['ionic'])
   game.init();
   $scope.init = function(){
     $scope.initiated = true;
-    game.background.draw();
     animateStatus = true;
     game.start();
   };
@@ -53,12 +50,9 @@ angular.module('dionic', ['ionic'])
     $scope.restartGameButton = false;
     restartGameButton = false;
     animateStatus = true;
+    game.reset();
     game.start();
   };
-  // console.log(game);
-  // if (game.init()){
-  //   game.start();
-  // }
 
   function Game() {
     this.init = function() {
@@ -92,7 +86,6 @@ angular.module('dionic', ['ionic'])
 
         this.dino = new Dino();
         var dinoX = 0;
-        // console.log(this.dino.height);
         var dinoY = window.innerHeight/2 - 75;
         this.dino.init(dinoX,dinoY,150,150);
         var b = this.dino;
@@ -122,6 +115,10 @@ angular.module('dionic', ['ionic'])
     this.start = function() {
       animate();
     };
+
+    this.reset = function() {
+      this.dino.clear(0,window.innerHeight/2 - 75);
+    }
   }
 
 
@@ -165,8 +162,8 @@ angular.module('dionic', ['ionic'])
       this.height = height;
     }
 
-    this.speed = 0;
-    this.gravity = 5;
+    this.speed = 10;
+    this.gravity = 12;
     this.canvasWidth = 0;
     this.canvasHeight = 0;
 
@@ -222,7 +219,6 @@ angular.module('dionic', ['ionic'])
             pool[i].clear();
             pool.push((pool.splice(i,1))[0]);
           }
-          // pool[i].collision(dino);
         } else {
           pool[i].restart();
         }
@@ -234,7 +230,6 @@ angular.module('dionic', ['ionic'])
             poolBlackhole[j].clear();
             poolBlackhole.push((poolBlackhole.splice(j,1))[0]);
           }
-          // pool[i].collision(dino);
         } else {
           poolBlackhole[j].restart();
         }
@@ -243,49 +238,40 @@ angular.module('dionic', ['ionic'])
   }
 
   function Dino() {
-    var gravity = 5;
-    // var counter = 0;
-    // var change = false;
+    // var gravity = 5;
     this.draw = function() {
       this.context.clearRect(this.x,this.y,this.width,this.height);
-      // this.y += this.gravity;
-      // if ((this.y <= (window.innerHeight - this.height) && this.y >= 0)) {
-      // console.log(window.innerHeight);
       if((this.y <= 0)|| (this.y >= (window.innerHeight-this.height))){
-        // console.log('here');
       }else{
-        this.y += gravity;
+        this.y += this.gravity;
       }
-
-      // } else {
-      //   if (change){
-      //     this.y += this.gravity;
-      //     change = false;
-      //   }
-      // }
 
       this.context.drawImage(imageRepo.dino, this.x, this.y);
     };
 
     this.invert = function() {
-      gravity = gravity*-1;
-      this.y += gravity;
-      // change = true;
-      // return this.gravity;
+      this.gravity = this.gravity*-1;
+      this.y += this.gravity;
     };
+
+    this.clear = function(x,y) {
+      this.context.clearRect(this.x,this.y,this.width,this.height);
+      this.x = x;
+      this.y = y;
+      this.gravity = 12;
+    }
   }
   Dino.prototype = new Drawable();
 
   function Steak() {
     this.alive = false;
-    this.speed = 5;
 
     this.spawn = function (x,y) {
       this.x = x;
       this.y = y;
       this.alive = true;
     };
-    // var counter = 0;
+
     this.draw = function(dino) {
       this.context.clearRect(this.x-1,this.y,this.width+1,this.height);
       this.x -= this.speed;
@@ -309,24 +295,21 @@ angular.module('dionic', ['ionic'])
     };
 
     this.restart = function() {
-      this.speed = 5;
+      this.speed = 10;
       this.alive = true;
     };
   }
   Steak.prototype = new Drawable();
 
-  //
-
   function Blackhole() {
     this.alive = false;
-    this.speed = 5;
 
     this.spawn = function (x,y) {
       this.x = x;
       this.y = y;
       this.alive = true;
     };
-    // var counter = 0;
+
     this.draw = function(dino) {
       this.context.clearRect(this.x-1,this.y,this.width+1,this.height);
       this.x -= this.speed;
@@ -355,7 +338,7 @@ angular.module('dionic', ['ionic'])
     };
 
     this.restart = function() {
-      this.speed = 5;
+      this.speed = 10;
       this.alive = true;
     };
   }
