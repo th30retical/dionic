@@ -48,7 +48,8 @@ angular.module('dionic', ['ionic'])
   };
 
   $scope.restartGame = function(){
-    $scope.restartGame = false;
+    $scope.restartGameButton = false;
+    restartGameButton = false;
     game.start();
   };
   // console.log(game);
@@ -122,14 +123,14 @@ angular.module('dionic', ['ionic'])
 
 
   function animate() {
-    // console.log(game.dino.y);
     requestAnimFrame( animate );
     game.background.draw();
     game.dino.draw();
     game.pool.animate(game.dino);
     $timeout(function(){
-      $scope.restartGame = restartGame;
+      $scope.restartGameButton = restartGameButton;
       $scope.score = score;
+      $scope.oldScore = oldScore;
     },0);
   }
 
@@ -314,7 +315,6 @@ angular.module('dionic', ['ionic'])
   function Blackhole() {
     this.alive = false;
     this.speed = 5;
-    var oldScore = 0;
 
     this.spawn = function (x,y) {
       this.x = x;
@@ -329,9 +329,11 @@ angular.module('dionic', ['ionic'])
       if (this.x <= -64){
         return true;
       } else if( (this.y > dino.y) && (this.y < (dino.y + 150)) && ( (this.x < 150) && (this.x > 0) )){
+        console.log('blackhole hit');
         if(score > oldScore)
           oldScore = score;
-        restartGame = true;
+        score = 0;
+        restartGameButton = true;
         return true;
       } else {
         this.context.drawImage(imageRepo.blackhole, this.x, this.y);
@@ -376,4 +378,5 @@ window.requestAnimFrame = (function(){
 })();
 
 var score = 0;
-var restartGame = false;
+var oldScore = 0;
+var restartGameButton = false;
