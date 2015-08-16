@@ -29,9 +29,10 @@ angular.module('dionic', ['ionic'])
 .controller('DionicController', function($scope, DionicFactory){
   var Drawable = DionicFactory.Drawable;
   var Background = DionicFactory.Background;
-  var Game = DionicFactory.Game;
-  var animate = DionicFactory.animate;
-  Background.prototype = new Drawable();
+  var Dino = DionicFactory.Dino;
+  var imageRepo = DionicFactory.imageRepo;
+  // var Game = DionicFactory.Game;
+  // var animate = DionicFactory.animate;
 
   var game = new Game();
   // console.log(game);
@@ -39,23 +40,72 @@ angular.module('dionic', ['ionic'])
     game.start();
   }
 
+  function Game() {
+    this.init = function() {
+      this.bgCanvas = document.getElementById('background');
+      this.dinoCanvas = document.getElementById('dino');
+      if (this.bgCanvas.getContext) {
+        this.bgContext = this.bgCanvas.getContext('2d');
+        this.dinoContext = this.dinoCanvas.getContext('2d');
+
+        Background.prototype.context = this.bgContext;
+        Background.prototype.canvasWidth = this.bgCanvas.width;
+        Background.prototype.canvasHeight = this.bgCanvas.height;
+        Dino.prototype.context = this.dinoContext;
+        Dino.prototype.canvasWidth = this.dinoCanvas.width;
+        Dino.prototype.canvasHeight = this.dinoCanvas.height;
+
+        this.background = new Background();
+        this.background.init(0,0);
+
+        this.dino = new Dino();
+        var dinoX = this.dinoCanvas.width/4 - imageRepo.dino.width;
+        var dinoY = this.dinoCanvas.height/2 - imageRepo.dino.height;
+        // console.log(imageRepo.dino.width);
+        this.dino.init(dinoX,dinoY,600,600);
+        // console.log(this.background);
+        // game = this;
+        return true;
+      } else {
+        return false;
+      }
+    };
+
+    this.start = function() {
+      // console.log(this);
+      // this.dino.draw();
+      animate();
+    };
+  }
+
+  function animate() {
+    // console.log("run");
+    requestAnimFrame( animate );
+    game.background.draw();
+    game.dino.draw();
+  }
 
 })
 
 .factory('DionicFactory', function(){
-  var GAME;
+  // var game;
   // this allows us to initalize pictures once and not multiple times
   var imageRepo = new function() {
     this.empty = null;
     this.background = new Image();
+    this.dino = new Image();
 
-    this.background.src = "img/bg.png";
+    this.background.src = "img/bg2.png";
+    this.dino.src = "img/dino.png";
+    console.log("done");
   };
 
   function Drawable() {
-    this.init = function(x,y) {
+    this.init = function(x,y,width,height) {
       this.x = x;
       this.y = y;
+      this.width = width;
+      this.height = height;
     }
 
     this.speed = 0;
@@ -68,7 +118,7 @@ angular.module('dionic', ['ionic'])
   }
 
   function Background() {
-    this.speed = 1;
+    this.speed = 5;
 
     this.draw = function() {
       this.x -= this.speed;
@@ -82,45 +132,20 @@ angular.module('dionic', ['ionic'])
     };
   }
   Background.prototype = new Drawable();
-  function Game() {
-    this.init = function() {
-      this.bgCanvas = document.getElementById('background');
-      if (this.bgCanvas.getContext) {
-        this.bgContext = this.bgCanvas.getContext('2d');
-        console.log(this.bgContext);
-        Background.prototype.context = this.bgContext;
-        Background.prototype.canvasWidth = this.bgCanvas.width;
-        Background.prototype.canvasHeight = this.bgCanvas.height;
 
-        this.background = new Background();
-        // console.log(this.background);
-        this.background.init(0,0);
-        GAME = this;
-        return true;
-      } else {
-        return false;
-      }
-    };
-
-    this.start = function() {
-      // console.log(this);
-      animate();
+  function Dino() {
+    // var counter = 0;
+    this.draw = function() {
+      this.context.drawImage(imageRepo.dino, this.x, this.y);
     };
   }
-
-  function animate() {
-    requestAnimFrame( animate );
-    // console.log(game);
-    GAME.background.draw();
-  }
-
-
+  Dino.prototype = new Drawable();
 
   return {
     Drawable:Drawable,
-    Game:Game,
     Background:Background,
-    animate:animate
+    Dino:Dino,
+    imageRepo:imageRepo
   }
 });
 
