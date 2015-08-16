@@ -59,8 +59,8 @@ angular.module('dionic', ['ionic'])
         this.background.init(0,0);
 
         this.dino = new Dino();
-        var dinoX = this.dinoCanvas.width/4 - imageRepo.dino.width;
-        var dinoY = this.dinoCanvas.height/2 - imageRepo.dino.height;
+        var dinoX = 0;
+        var dinoY = this.dinoCanvas.height/2 - window.innerHeight/2;
         // console.log(imageRepo.dino.width);
         this.dino.init(dinoX,dinoY,600,600);
         // console.log(this.background);
@@ -95,7 +95,7 @@ angular.module('dionic', ['ionic'])
     this.background = new Image();
     this.dino = new Image();
 
-    this.background.src = "img/bg2.png";
+    this.background.src = "img/bg3.png";
     this.dino.src = "img/dino.png";
     console.log("done");
   };
