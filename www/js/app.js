@@ -30,6 +30,7 @@ angular.module('dionic', ['ionic'])
   var Drawable = DionicFactory.Drawable;
   var Background = DionicFactory.Background;
   var Dino = DionicFactory.Dino;
+  var Steak = DionicFactory.Steak;
   var imageRepo = DionicFactory.imageRepo;
   // var Game = DionicFactory.Game;
   // var animate = DionicFactory.animate;
@@ -44,9 +45,11 @@ angular.module('dionic', ['ionic'])
     this.init = function() {
       this.bgCanvas = document.getElementById('background');
       this.dinoCanvas = document.getElementById('dino');
+      this.steakCanvas = document.getElementById('steak');
       if (this.bgCanvas.getContext) {
         this.bgContext = this.bgCanvas.getContext('2d');
         this.dinoContext = this.dinoCanvas.getContext('2d');
+        this.steakContext = this.steakCanvas.getContext('2d');
 
         Background.prototype.context = this.bgContext;
         Background.prototype.canvasWidth = this.bgCanvas.width;
@@ -54,6 +57,10 @@ angular.module('dionic', ['ionic'])
         Dino.prototype.context = this.dinoContext;
         Dino.prototype.canvasWidth = this.dinoCanvas.width;
         Dino.prototype.canvasHeight = this.dinoCanvas.height;
+        Steak.prototype.context = this.steakContext;
+        Steak.prototype.canvasWidth = this.steakCanvas.width;
+        Steak.prototype.canvasHeight = this.steakCanvas.height;
+
 
         this.background = new Background();
         this.background.init(0,0);
@@ -63,6 +70,11 @@ angular.module('dionic', ['ionic'])
         // console.log(this.dino.height);
         var dinoY = window.innerHeight/2 - 75;
         this.dino.init(dinoX,dinoY,150,150);
+
+        this.steak = new Steak();
+        console.log(steak);
+        this.steak.init(0,0,64,64);
+
         return true;
       } else {
         return false;
@@ -79,6 +91,7 @@ angular.module('dionic', ['ionic'])
     requestAnimFrame( animate );
     game.background.draw();
     game.dino.draw();
+    game.steak.draw();
   }
 
 })
@@ -90,10 +103,11 @@ angular.module('dionic', ['ionic'])
     this.empty = null;
     this.background = new Image();
     this.dino = new Image();
+    this.steak = new Image();
 
     this.background.src = "img/bg3.png";
     this.dino.src = "img/dino.png";
-    console.log("done");
+    this.steak.src = "img/steak.png";
   };
 
   function Drawable() {
@@ -135,12 +149,21 @@ angular.module('dionic', ['ionic'])
       this.context.drawImage(imageRepo.dino, this.x, this.y);
     };
   }
+
+  function Steak() {
+    // var counter = 0;
+    this.draw = function() {
+      this.context.drawImage(imageRepo.steak, this.x, this.y);
+    };
+  }
   Dino.prototype = new Drawable();
+  Steak.prototype = new Drawable();
 
   return {
     Drawable:Drawable,
     Background:Background,
     Dino:Dino,
+    Steak:Steak,
     imageRepo:imageRepo
   }
 });
