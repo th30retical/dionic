@@ -146,7 +146,7 @@ angular.module('dionic', ['ionic'])
     }
 
     this.speed = 0;
-    this.gravity = 1;
+    this.gravity = 3;
     this.canvasWidth = 0;
     this.canvasHeight = 0;
 
@@ -206,6 +206,14 @@ angular.module('dionic', ['ionic'])
   function Dino() {
     // var counter = 0;
     this.draw = function() {
+      this.context.clearRect(this.x,this.y,this.width,this.height);
+      this.y += this.gravity;
+      if (this.y >= (window.innerHeight - this.height/2)) {
+        console.log("fuck m8");
+        this.y -= this.gravity;
+      }
+
+
       this.context.drawImage(imageRepo.dino, this.x, this.y);
     };
   }
