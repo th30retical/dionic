@@ -118,7 +118,7 @@ angular.module('dionic', ['ionic'])
     requestAnimFrame( animate );
     game.background.draw();
     game.dino.draw();
-    game.pool.animate();
+    game.pool.animate(game.dino);
   }
 
 })
@@ -146,7 +146,7 @@ angular.module('dionic', ['ionic'])
     }
 
     this.speed = 0;
-    this.gravity = 3;
+    this.gravity = 5;
     this.canvasWidth = 0;
     this.canvasHeight = 0;
 
@@ -189,15 +189,16 @@ angular.module('dionic', ['ionic'])
       }
     };
 
-    this.animate = function() {
+    this.animate = function(dino) {
       for (var i = 0; i < size; i++) {
         if (pool[i].alive) {
           if (pool[i].draw()) {
             pool[i].clear();
             pool.push((pool.splice(i,1))[0]);
           }
+          pool[i].collision(dino);
         } else {
-          pool[i].reset();
+          pool[i].restart();
         }
       }
     };
@@ -208,9 +209,14 @@ angular.module('dionic', ['ionic'])
     this.draw = function() {
       this.context.clearRect(this.x,this.y,this.width,this.height);
       this.y += this.gravity;
-      if (this.y >= (window.innerHeight - this.height/2)) {
-        console.log("fuck m8");
+      if (this.y >= (window.innerHeight - this.height)) {
+        // console.log("fuck m8");
         this.y -= this.gravity;
+        this.gravity = this.gravity*-1;
+      } else if (this.y <= 0) {
+        // console.log("flying high fom");
+        this.y -= this.gravity;
+        this.gravity = this.gravity*-1;
       }
 
 
@@ -248,7 +254,14 @@ angular.module('dionic', ['ionic'])
       this.alive = false;
     };
 
-    this.reset = function() {
+    this.collision = function(dino) {
+      if (this.x <= 150) {
+        //start check if steak hits dino
+        console.log(dino.y);
+      }
+    };
+
+    this.restart = function() {
       this.speed = 5;
       this.alive = true;
     };
