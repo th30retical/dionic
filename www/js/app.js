@@ -86,20 +86,20 @@ angular.module('dionic', ['ionic'])
 
         this.dino = new Dino();
         var dinoX = 0;
-        var dinoY = window.innerHeight/2 - 75;
+        var dinoY = 400/2 - 75;
         this.dino.init(dinoX,dinoY,150,150);
         var b = this.dino;
 
-        this.pool = new Pool(8);
+        this.pool = new Pool(5);
         this.pool.init();
 
-        var x = window.innerWidth;
-        var y = window.innerHeight/2 - 32;
+        var x = 600;
+        var y = 400/2 - 32;
 
         for (var i = 0; i < 8; i++) {
           this.pool.get(x,y);
           x += 64 + 150;
-          y = Math.floor(Math.random()* (window.innerHeight-64));
+          y = Math.floor(Math.random()* (400-64));
         }
 
         $scope.onTap = function() {
@@ -117,16 +117,16 @@ angular.module('dionic', ['ionic'])
     };
 
     this.reset = function() {
-      this.dino.clear(0,window.innerHeight/2 - 75);
-      this.steakContext.clearRect(0,0,1920,1080);
-      this.blackholeContext.clearRect(0,0,1920,1080);
+      this.dino.clear(0,400/2 - 75);
+      this.steakContext.clearRect(0,0,600,400);
+      this.blackholeContext.clearRect(0,0,600,400);
       this.pool.init();
-      var x = window.innerWidth;
-      var y = window.innerHeight/2 - 32;
+      var x = 600;
+      var y = 400/2 - 32;
       for (var i = 0; i < 8; i++) {
         this.pool.get(x,y);
         x += 64 + 150;
-        y = Math.floor(Math.random()* (window.innerHeight-64));
+        y = Math.floor(Math.random()* (400-64));
       }
     }
   }
@@ -198,7 +198,7 @@ angular.module('dionic', ['ionic'])
 
   function Pool(maxSize) {
     var size = maxSize;
-    var blackholeSize = 4;
+    var blackholeSize = 2;
     var pool = [];
     var poolBlackhole = [];
 
@@ -251,7 +251,7 @@ angular.module('dionic', ['ionic'])
     // var gravity = 5;
     this.draw = function() {
       this.context.clearRect(this.x,this.y,this.width,this.height);
-      if((this.y <= 0)|| (this.y >= (window.innerHeight-this.height))){
+      if((this.y <= 0)|| (this.y >= (400-this.height))){
       }else{
         this.y += this.gravity;
       }
@@ -298,8 +298,8 @@ angular.module('dionic', ['ionic'])
     };
 
     this.clear = function() {
-      this.x = window.innerWidth+65+200;
-      this.y = Math.floor(Math.random() * (window.innerHeight - this.width));
+      this.x = 600+65+200;
+      this.y = Math.floor(Math.random() * (400 - this.width));
       this.speed = 0;
       this.alive = false;
     };
@@ -341,8 +341,8 @@ angular.module('dionic', ['ionic'])
     };
 
     this.clear = function() {
-      this.x = window.innerWidth+65+200;
-      this.y = Math.floor(Math.random() * (window.innerHeight - this.width));
+      this.x = 600+150+200;
+      this.y = Math.floor(Math.random() * (400));
       this.speed = 0;
       this.alive = false;
     };

@@ -35,8 +35,8 @@
         left:0px;
       }
       #background {
-        height:100vh;
-        width:100vw;
+        /*height:100vh;
+        width:100vw;*/
         z-index: -2;
       }
       #steak {
@@ -62,12 +62,12 @@
     <button class="button button-clear button-energized button-large" style="font-size: 50px">
     Score: {{score}} High Score: {{oldScore}}
     </button>
-    <canvas id="background" height="1080" width="1920">
+    <canvas id="background" height="400" width="600">
       Your browser does not support canvas. Please try again with a differet browser.
     </canvas>
-    <canvas id="dino" width="1920" height="1080"></canvas>
-    <canvas id="steak" width="1920" height="1080"></canvas>
-    <canvas id="blackhole" width="1920" height="1080"></canvas>
+    <canvas id="dino" width="600" height="400"></canvas>
+    <canvas id="steak" width="600" height="400"></canvas>
+    <canvas id="blackhole" width="600" height="400"></canvas>
     <button id="startButton" class="button button-energized" style="font-size: 100px;" ng-click="init();" ng-if="!initiated">
       Start
     </button>
