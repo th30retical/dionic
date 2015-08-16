@@ -60,11 +60,9 @@ angular.module('dionic', ['ionic'])
 
         this.dino = new Dino();
         var dinoX = 0;
-        var dinoY = this.dinoCanvas.height/2 - window.innerHeight/2;
-        // console.log(imageRepo.dino.width);
-        this.dino.init(dinoX,dinoY,600,600);
-        // console.log(this.background);
-        // game = this;
+        // console.log(this.dino.height);
+        var dinoY = window.innerHeight/2 - 75;
+        this.dino.init(dinoX,dinoY,150,150);
         return true;
       } else {
         return false;
@@ -72,8 +70,6 @@ angular.module('dionic', ['ionic'])
     };
 
     this.start = function() {
-      // console.log(this);
-      // this.dino.draw();
       animate();
     };
   }
