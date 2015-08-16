@@ -118,6 +118,16 @@ angular.module('dionic', ['ionic'])
 
     this.reset = function() {
       this.dino.clear(0,window.innerHeight/2 - 75);
+      this.steakContext.clearRect(0,0,1920,1080);
+      this.blackholeContext.clearRect(0,0,1920,1080);
+      this.pool.init();
+      var x = window.innerWidth;
+      var y = window.innerHeight/2 - 32;
+      for (var i = 0; i < 8; i++) {
+        this.pool.get(x,y);
+        x += 64 + 150;
+        y = Math.floor(Math.random()* (window.innerHeight-64));
+      }
     }
   }
 
